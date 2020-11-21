@@ -1,11 +1,11 @@
 Template: article
-Title: Situazione finanziaria al 21/11/2020 19:41:09
-Date: 21/11/2020 19:41:09
+Title: Situazione finanziaria al 21/11/2020 19:52:10
+Date: 21/11/2020 19:52:10
 Category: FINANZA
 lang: it
 slug: finanze-ppit-20201121
 
-# Situazione Finanziara al 21/11/2020 19:41:09
+# Situazione Finanziara al 21/11/2020 19:52:10
 
 # Stato Patrimoniale
 
