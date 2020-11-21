@@ -1,0 +1,47 @@
+Template: article
+Title: Situazione finanziaria al {DATA}
+Date: {DATA}
+Category: FINANZA
+lang: it
+slug: finanze-ppit-{JDATA}
+
+# Situazione Finanziara al {DATA}
+
+|Gran Totale||{GRANTOTALE}|
+|-|-|-|
+|| di cui  ||
+|| - FEE totali pagate | {FEE_TOTALI} |
+|| - in arrivo   | {A_DONORBOX} |
+|| - disponibili | {DISPONIBILE} |
+
+# Servizi
+
+| Servizio | Giacenza | Fee pagate | 
+| - | - | - |
+| Paypal | {A_PAYPAL} | {FEE_PAYPAL} |
+| Stripe | {A_STRIPE} | {FEE_STRIPE} |
+| DonorBox | {A_DONORBOX} | {FEE_DONORBOX}|
+| Conto Tinaba | {CONTO_TINABA}| |
+| Carta Tinaba | {CARTA_TINABA}| |
+| Totale Tinaba | {A_TINABA} | |
+
+# Entrate e Uscite
+
+| Totali | | {TOTALE} |
+|-|-|-|
+|| di cui: ||
+|| Iscrizioni | {ISCRIZIONI} |
+|| Donazioni | {DONAZIONI} |
+|| Altro  | {ALTRO} |
+|| Pagamenti | {PAGAMENTI} |
+
+# Stato Patrimoniale
+
+
+|ATTIVO||PASSIVO||
+{STATO_PATRIMONIALE}
+
+# Conto Economico
+
+|COSTI||RICAVI||
+{CONTO_ECONOMICO}

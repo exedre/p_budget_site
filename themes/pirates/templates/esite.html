@@ -1,0 +1,27 @@
+
+{% if article.num %}
+<div class="e-container">
+  <div class="e-name">e-privacy</div>
+  {% if article.num %} <div class="e-num">{{article.num}}</div>        {% endif %}
+        
+  {% if article.when %} <div class="e-when">{{article.when}}</div> {% endif %}
+  {% if article.year %} <div class="e-year">{{article.year}}</div> {% endif %}
+  {% if article.season %} <div class="e-season">{{article.season}}</div> {% endif %}
+  {# Year Navigation #}
+  <table style="width:100%">
+    <tr>
+      <td class="e-prev" width="50%">
+        {% if article.prev %}
+        <a   href="{{article.prev}}.html">&lt; {{ article.previd }}</a>
+        {% endif %}
+      </td>
+      <td class="e-next" width="50%">
+        {% if article.next %}<a  href="{{article.next}}.html">{{
+          article.nextid }} &gt;</a>{% endif %}
+      </td>
+    </tr>
+  </table>
+  {% if article.city %} <div class="e-city">{{article.city}}</div> {% endif %}
+  {% if article.where %} <div class="e-where">{{article.where}}</div> {% endif %}
+</div>
+{% endif %}

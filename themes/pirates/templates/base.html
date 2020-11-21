@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <!-- Set the viewport width to device width for mobile -->
+    <meta name="viewport" content="width=device-width" />
+
+    {% block redirect %}{% endblock %}
+    <title>{% block title %}{{ SITENAME }}{%endblock%}</title>
+
+    <link rel="stylesheet"
+          href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+
+    <link rel="stylesheet"
+          href="//yui.yahooapis.com/pure/0.4.2/pure-min.css">
+
+    <link rel="stylesheet"
+          href="//fonts.googleapis.com/css?family=Source+Sans+Pro:300,600,300italic">
+
+    <link rel="stylesheet" href="{{ SITEURL }}/theme/css/normalize.css" />
+    <link rel="stylesheet" href="{{ SITEURL }}/theme/css/foundation.min.css" />
+    <link rel="stylesheet" href="{{ SITEURL }}/theme/css/style.css" />
+    <link rel="stylesheet" href="{{ SITEURL }}/theme/css/pygments.css"/>
+    <link rel="stylesheet" href="{{ SITEURL }}/theme/css/syntax.css">
+
+    <script src="{{ SITEURL }}/theme/js/jquery.js"></script>
+    <script src="{{ SITEURL }}/theme/js/bootstrap.min.js"></script>
+    <script src="{{ SITEURL }}/theme/js/lodash.min.js"></script>
+    <script src="{{ SITEURL }}/theme/js/modernizr.js"></script>
+    <script src="{{ SITEURL }}/theme/js/jquery.countdown.js"></script>
+
+</head>
+
+<body>
+
+<!-- Nav Bar -->
+<nav>
+  <div class="top-bar">
+    <div class="row">
+      <a href="https://partito-pirata.it"><div id="top_img_left"></div></a>
+      <div class="large-9 large-centered columns">
+	    <h1><a href="{{ SITEURL }}/">
+            {% block ptitle %}{{ SITENAME }}{%endblock%}
+        </a></h1>
+      </div>
+      <a href="http://pluto.partito-pirata.it"><div id="top_img_right"></div></a>
+    </div>
+  </div>
+
+  <!-- Show menu items and pages -->
+  <div class="row">
+    <div class="large-9 columns">
+      <ul class="button-group navigation">
+	    {% for title, link in MENUITEMS %}
+        <li><a href="{{ link }}" class="button secondary small">{{ title }}</a></li>
+        {% endfor %}
+        {% if DISPLAY_PAGES_ON_MENU %}
+        {% for page in PAGES %}
+        <li><a href="{{ SITEURL }}/{{ page.url }}" class="button secondary small">{{ page.title }}</a></li>
+        {% endfor %}
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+<!-- End Nav -->
+
+
+<!-- Main Page Content and Sidebar -->
+<div class="row">
+
+    <!-- Main Blog Content -->
+    <div class="large-9 columns">
+    {% block content %}{% endblock %}
+    </div>
+    <!-- End Main Content -->
+
+</div> <!-- End Main Content and Sidebar -->
+
+
+<!-- Footer -->
+<footer class="row">
+    <div class="large-12 columns">
+        <hr />
+        <div class="row">
+          <div class="large-12 columns footer">
+            Tutto il contenuto di questo sito è
+            &copy; <a href="http://partito-pirata.it">Partito Pirata</a> — I contenuti sono distribuiti sotto
+            la <a href="http://www.gnu.org/licenses/old-licenses/gpl-2.0.html">Gnu
+            General Public License 2.0</a> ove non altrimenti
+            specificato. <br/>Se riscontri un errore su queste pagine manda
+            una mail
+            al <a href="mailto:webmaster@partito-pirata.it">webmaster</a>.<br/>
+            Nessun cookie è stato iniettato sul tuo computer da questo
+            sito (il fatto che siamo obbligati a dirtelo non rende
+            meno stupida la legge che ci forza a farlo).
+          </div>
+        </div>
+    </div>
+</footer>
+{% include 'piwik.html' %}
+{% include 'mautic.html' %}
+</body>
+</html>

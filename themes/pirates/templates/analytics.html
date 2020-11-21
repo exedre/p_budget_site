@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block evinfo %}
+{% include 'evinfo.html' %}
+{% endblock evinfo %}
+
+{% block title %}
+{% if article.num %}e-privacy {{ article.num }} — {% endif %}
+{{ article.title|striptags }}
+{% endblock title %}
+
+{% block ptitle %}
+{% if article.pagetitle %}
+ {{ article.pagetitle }}
+{% else %}
+ {% if article.num %}e-privacy {{ article.num }}
+  {% if article.year %} <i>({{ article.year }})</i>{% endif %}<br/>
+ {% endif %}
+ {{ article.title }}
+{% endif %}
+{% endblock ptitle %}
+
+{% block oldsite %}{% include 'oldsite.html' %}{% endblock oldsite %}
+
+{% block content %}
+<article>
+{#
+  <header>
+        <h3 class="article-title"><a href="{{ SITEURL }}/{{ article.url }}" rel="bookmark"
+        title="Permalink to {{ article.title|striptags }}">{{ article.title}}</a></h3>
+        {% include 'twitter.html' %}
+    </header>
+        {% include 'event_infos.html' %}
+#}
+    
+    {% if article.slogan %}
+    <table class="slogan"><tr><td width="100%">{{ article.slogan }}</td></tr></table>
+    {% endif %}
+    {{ article.content }}       
+    {% include 'event_supporters2.html' %}
+    {% include 'event_infos_bottom.html' %}   
+    {% if DISQUS_SITENAME and SITEURL and article.status != "draft" %}
+	<h4>Comments</h4>
+    {% include 'disqus_script.html' %}
+    {% endif %}
+</article>
+{% endblock %}

@@ -1,0 +1,9 @@
+RewriteEngine on
+
+# RewriteRule ^oranges.html$ apples.html
+# RewriteRule ^index.html$ offline.html
+
+RewriteRule ^(20(?:(?:0(?:2|3|4|5|6|7|8|9))|(?:1(?:0|1|2|2we|3|3we|4|4we))))(.*)$ materiali/$1$2
+RewriteRule ^img/(.+)$ https://urna.winstonsmith.info/materiali/img/$1
+RewriteRule ^materiali/(.+)$ https://urna.winstonsmith.info/materiali/$1
+

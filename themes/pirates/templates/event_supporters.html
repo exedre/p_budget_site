@@ -1,0 +1,170 @@
+<style>
+  #photo_strip { margin:0 auto 5px auto; font-family:'latolight', arial, sans-serif;}
+  #container {padding:0; color:#222; background:#fff; display:table; 
+    margin: auto 0;
+    width: 100%;
+    max-height: 75px;
+    overflow-x: scroll;
+    white-space: nowrap;
+    max-width: inherited;
+  }
+  #container ul {margin:0; padding:0; list-style:none; white-space:nowrap; display:table-row;}
+  #container ul li { display:table-cell; padding:0 5px; background:#fff; vertical-align:top; }
+  #container ul li img { margin: 10px 0 5px 0;  max-width: initial; display: inline-block; vertical-align: top;  height: 100%; } 
+  #photo_strip h1 {text-align:center; padding:0; margin:0; height:38px; line-height:35px; color:#555; font-weight:normal; 
+  font-size:20px; border-bottom:1px solid #888; text-transform:uppercase;}
+  #container p {margin:0; padding:5px 0; font-size:14px;}
+</style>
+
+<!--[if lte IE 7]>
+<style>
+#container {
+width:630px;
+scrollbar-arrow-color: #eee;
+scrollbar-3dlight-color: #888;
+scrollbar-highlight-color: #eee;
+scrollbar-face-color: #888;
+scrollbar-shadow-color: #eee;
+scrollbar-darkshadow-color: #888;
+scrollbar-track-color: #fff;
+}
+#container ul li {display:inline; zoom:1; height:390px;}
+* html #container {height:470px; he\ight:430px;}
+</style>
+<![endif]-->
+
+<style>
+	@media only screen and (max-width:480px)  {
+	#photo_strip { display:none; }
+	#info h3.smartphone {display:block;}
+	}
+</style>
+
+
+
+    {% if article.organizzatori %} 
+    <div id="photo_strip">
+    <h1>Organizzato da</h1>
+    {% set orgs = article.organizzatori|split %}
+    <div id="container">
+    <ul>
+    {%- for org in orgs %}
+    <li>
+      <a href="{{ PARTNERS[org][2] }}"
+           alt="{{ PARTNERS[org][0] }}">
+          <img src="{{ SITEURL }}/images/logo/{{ PARTNERS[org][1] }}"></img>
+        </a><!-- <p>{{ PARTNERS[org][0] }}</p> -->
+    </li>
+    {%- endfor %}
+	</ul>
+    </div>
+    </div>
+    {% endif %}
+
+    {% if article.collaboratori %}
+    
+    <div id="photo_strip">
+    <h1>In collaborazione con</h1>
+    {% set orgs = article.collaboratori|split %}
+    <div id="container">
+    <ul>
+    {%- for org in orgs %}
+    <li>
+      <a href="{{ PARTNERS[org][2] }}"
+           alt="{{ PARTNERS[org][0] }}">
+          <img src="{{ SITEURL }}/images/logo/{{ PARTNERS[org][1] }}"></img>
+        </a><!-- <p>{{ PARTNERS[org][0] }}</p> -->
+    </li>
+    {%- endfor %}
+	</ul>
+    </div>
+    </div>
+    
+    {% endif %}
+
+    {% if article.patrocini %}
+    
+    <div id="photo_strip">
+    <h1>Patrocinato da</h1>
+    {% set orgs = article.patrocini|split %}
+    <div id="container">
+    <ul>
+    {%- for org in orgs %}
+    <li>
+      <a href="{{ PARTNERS[org][2] }}"
+           alt="{{ PARTNERS[org][0] }}">
+          <img src="{{ SITEURL }}/images/logo/{{ PARTNERS[org][1] }}"></img>
+        </a><!-- <p>{{ PARTNERS[org][0] }}</p> -->
+    </li>
+    {%- endfor %}
+	</ul>
+    </div>
+    </div>
+    
+    {% endif %}
+
+    {% if article.subpatrocini %}
+    
+    <div id="photo_strip">
+    <h1>Altri patrocini</h1>
+    {% set orgs = article.subpatrocini|split %}
+    <div id="container">
+    <ul>
+    {%- for org in orgs %}
+    <li>
+      <a href="{{ PARTNERS[org][2] }}"
+           alt="{{ PARTNERS[org][0] }}">
+          <img src="{{ SITEURL }}/images/logo/{{ PARTNERS[org][1] }}"></img>
+        </a><!-- <p>{{ PARTNERS[org][0] }}</p> -->
+    </li>
+    {%- endfor %}
+	</ul>
+    </div>
+    </div>
+    
+    {% endif %}
+
+    {% if article.sponsor %}
+    
+    <div id="photo_strip">
+    <h1>Supporter</h1>
+    {% set orgs = article.sponsor|split %}
+    <div id="container">
+    {%- for row in orgs|batch(2) %}
+    <ul>
+      {%- for org in row %}
+    <li>
+      <a href="{{ PARTNERS[org][2] }}"
+           alt="{{ PARTNERS[org][0] }}">
+          <img src="{{ SITEURL }}/images/logo/{{ PARTNERS[org][1] }}"></img>
+        </a><!-- <p>{{ PARTNERS[org][0] }}</p> -->
+    </li>
+    {%- endfor %}
+    </ul>
+    {%- endfor %}
+    </div>
+    </div>
+    
+    {% endif %}
+
+    {% if article.mediapartner %}
+    
+    <div id="photo_strip">
+    <h1>Media Partner</h1>
+    {% set orgs = article.mediapartner|split %}
+    <div id="container">
+    <ul>
+    {%- for org in orgs %}
+    <li>
+      <a href="{{ PARTNERS[org][2] }}"
+           alt="{{ PARTNERS[org][0] }}">
+          <img src="{{ SITEURL }}/images/logo/{{ PARTNERS[org][1] }}"></img>
+        </a><!-- <p>{{ PARTNERS[org][0] }}</p> -->
+    </li>
+    {%- endfor %}
+	</ul>
+    </div>
+    </div>
+    
+    {% endif %}
+    
