@@ -15,7 +15,7 @@ FTP_TARGET_DIR=/
 SSH_HOST=ppit
 SSH_PORT=22
 SSH_USER=ppit
-SSH_TARGET_DIR=/home/sites/it.partito-pirata/it.partito-pirata.pluto/home/
+SSH_TARGET_DIR=/home/sites/it.partito-pirata/it.partito-pirata.bilancio/home/
 
 S3_BUCKET=my_s3_bucket
 
@@ -85,7 +85,7 @@ stopserver:
 	@echo 'Stopped Pelican and SimpleHTTPServer processes running in background.'
 
 publish:
-	# git pull
+	git pull
 	$(PELICAN) $(INPUTDIR) -o $(OUTPUTDIR) -s $(PUBLISHCONF) $(PELICANOPTS)
 
 ssh_upload: publish
@@ -94,13 +94,11 @@ ssh_upload: publish
 
 upload: publish
 	rsync -P -rvzc --delete $(OUTPUTDIR)/ $(SSH_TARGET_DIR) --cvs-exclude  --exclude=materiali --delete-excluded
-	# ln -sf /var/www/urna.winstonsmith.info/materiali/ $(SSH_TARGET_DIR)/materiali
 
 
 rsync_upload: publish
 	rsync -e "ssh  -Y -p $(SSH_PORT)" -P -rvzc --delete $(OUTPUTDIR)/ $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR) --cvs-exclude
-	# --groupmap=ppit:www-data
-	# git pull && git commit -a -m step && git push && git status || echo "************** ERRORE DI COMMIT **********"
+	git pull && git commit -a -m step && git push && git status || echo "************** ERRORE DI COMMIT **********"
 
 # --usermap=ampleforth:www-data
 
@@ -109,20 +107,6 @@ commit:
 	git commit -a -m step
 	git push
 	git status
-
-
-
-dropbox_upload: publish
-	cp -r $(OUTPUTDIR)/* $(DROPBOX_DIR)
-
-ftp_upload: publish
-	lftp ftp://$(FTP_USER)@$(FTP_HOST) -e "mirror -R $(OUTPUTDIR) $(FTP_TARGET_DIR) ; quit"
-
-s3_upload: publish
-	s3cmd sync $(OUTPUTDIR)/ s3://$(S3_BUCKET) --acl-public --delete-removed --guess-mime-type
-
-cf_upload: publish
-	cd $(OUTPUTDIR) && swift -v -A https://auth.api.rackspacecloud.com/v1.0 -U $(CLOUDFILES_USERNAME) -K $(CLOUDFILES_API_KEY) upload -c $(CLOUDFILES_CONTAINER) .
 
 github: publish
 	ghp-import -m "Generate Pelican site" -b $(GITHUB_PAGES_BRANCH) $(OUTPUTDIR)
