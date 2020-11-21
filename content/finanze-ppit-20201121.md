@@ -1,42 +1,13 @@
 Template: article
-Title: Situazione finanziaria al 21/11/2020 17:28:40
-Date: 21/11/2020 17:28:40
+Title: Situazione finanziaria al 21/11/2020 19:41:09
+Date: 21/11/2020 19:41:09
 Category: FINANZA
 lang: it
 slug: finanze-ppit-20201121
 
-# Situazione Finanziara al 21/11/2020 17:28:40
-
-|Gran Totale||5000.75|
-|-|-|-|
-|| di cui  ||
-|| - FEE totali pagate | -16.55 |
-|| - in arrivo   | 134.36 |
-|| - disponibili | 4849.84 |
-
-# Servizi
-
-| Servizio | Giacenza | Fee pagate | 
-| - | - | - |
-| Paypal | 0.0 | 1.96 |
-| Stripe | 0.0 | 8.11 |
-| DonorBox | 134.36 | 6.48|
-| Conto Tinaba | 4637.45| |
-| Carta Tinaba | 78.03| |
-| Totale Tinaba | 4715.48 | |
-
-# Entrate e Uscite
-
-| Totali | | 4815.25 |
-|-|-|-|
-|| di cui: ||
-|| Iscrizioni | €629.86 |
-|| Donazioni | €27.75 |
-|| Altro  | €4,683.34 |
-|| Pagamenti | -€525.70 |
+# Situazione Finanziara al 21/11/2020 19:41:09
 
 # Stato Patrimoniale
-
 
 |ATTIVO||PASSIVO||
 |-|-|-|-|
@@ -61,3 +32,21 @@ slug: finanze-ppit-20201121
 |Totale Costi|€ 525.70|Totale Ricavi|€ 672.78|
 |Utile d'esercizio|€ 147.08|||
 |Totale a pareggio|€ 672.78|Totale a pareggio|€ 672.78
+
+|Gran Totale||5000.75|
+|-|-|-|
+|| di cui  ||
+|| - FEE totali pagate | -16.55 |
+|| - in arrivo   | 134.36 |
+|| - disponibili | 4849.84 |
+
+# Costi dei servizi bancari
+
+| Servizio | Fee pagate | 
+| - | - |
+| Paypal |  1.96 |
+| Stripe |  8.11 |
+| DonorBox |  6.48|
+| Conto Tinaba | |
+| Carta Tinaba | |
+
