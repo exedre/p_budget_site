@@ -17,13 +17,6 @@ slug: finanze-ppit-{JDATA}
 |COSTI||RICAVI||
 {CONTO_ECONOMICO}
 
-|Gran Totale||{GRANTOTALE}|
-|-|-|-|
-|| di cui  ||
-|| - FEE totali pagate | {FEE_TOTALI} |
-|| - in arrivo   | {A_DONORBOX} |
-|| - disponibili | {DISPONIBILE} |
-
 # Costi dei servizi bancari
 
 | Servizio | Fee pagate | 

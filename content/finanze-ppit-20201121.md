@@ -33,13 +33,6 @@ slug: finanze-ppit-20201121
 |Utile d'esercizio|€ 147.08|||
 |Totale a pareggio|€ 672.78|Totale a pareggio|€ 672.78
 
-|Gran Totale||5000.75|
-|-|-|-|
-|| di cui  ||
-|| - FEE totali pagate | -16.55 |
-|| - in arrivo   | 134.36 |
-|| - disponibili | 4849.84 |
-
 # Costi dei servizi bancari
 
 | Servizio | Fee pagate | 
