@@ -7,6 +7,8 @@ slug: finanze-ppit-{JDATA}
 
 # Situazione Finanziara al {DATA}
 
+Questa è una bozza non verificata del bilancio attuale del Partito Pirata, estratta in automatico ogni notte dalla contabilità. Per questo motivo è possibile che i conti non siano completamente quadrati in relazioni a scrittura non correttamente registrate. È chiaro che questa pagina è pubblicata a titolo di mera informazione, così com'è, senza nessuna garanzia implicita o esplicita. Fanno fede solo i bilanci ufficiali periodici revisionati dal tesoriere e presentati all'assemblea.
+
 # Stato Patrimoniale
 
 |ATTIVO||PASSIVO||
@@ -27,3 +29,6 @@ slug: finanze-ppit-{JDATA}
 | Conto Tinaba | |
 | Carta Tinaba | |
 
+
+
+<br/><a href="/finanze-ppit-{JDATAY}">&lt;</a><br/>

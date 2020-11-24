@@ -121,6 +121,11 @@ def main(debug,debug_section):
         values[field] = value
         print(field,"=",value)
     values['JDATA']=re.sub(r'(\d+)/(\d+)/(\d\d\d\d) (\d+):(\d+):(\d+)',r'\3\2\1',values['DATA'])
+    import datetime
+    s = re.sub(r'(\d+)/(\d+)/(\d\d\d\d) (\d+):(\d+):(\d+)',r'\3_\2_\1',values['DATA'])
+    theday = datetime.date(*map(int, s.split('_')))
+    prevday = theday - datetime.timedelta(days=1)
+    values['JDATAY']=prevday.strftime('%Y%m%d')
     if debug and debug_section=='db':
         pprint(values)
         return
