@@ -91,6 +91,10 @@ publish:
 ssh_upload: publish
 	scp -P $(SSH_PORT) -r $(OUTPUTDIR)/* $(SSH_USER)@$(SSH_HOST):$(SSH_TARGET_DIR)
 
+go: do rsync_upload
+
+do:
+	conda activate pws; cd /home/exedre/PP-IT/it.partito-pirata.bilancio-site/ && python sync-sheet.py
 
 upload: publish
 	rsync -P -rvzc --delete $(OUTPUTDIR)/ $(SSH_TARGET_DIR) --cvs-exclude  --exclude=materiali --delete-excluded
@@ -112,4 +116,4 @@ github: publish
 	ghp-import -m "Generate Pelican site" -b $(GITHUB_PAGES_BRANCH) $(OUTPUTDIR)
 	git push origin $(GITHUB_PAGES_BRANCH)
 
-.PHONY: html help clean regenerate serve devserver upload publish ssh_upload rsync_upload dropbox_upload ftp_upload s3_upload cf_upload github
+.PHONY: html help clean regenerate serve devserver upload publish ssh_upload rsync_upload dropbox_upload ftp_upload s3_upload cf_upload github go do
