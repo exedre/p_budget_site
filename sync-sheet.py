@@ -132,6 +132,7 @@ def main(debug,debug_section):
     for n,label in enumerate('ISCRIZIONI,DONAZIONI,ALTRO,PAGAMENTI'.split(',')):
         values[label]=values['TOTALI'][n]
     descrizioni = dict([ (k,v) for k,v in values['DESCRIZIONE_BILANCIO']])
+    values['DESCRIZIONI']=descrizioni
     values['BILANCIO'] = {}
     values = setup_bilancio(values,'CE_COSTI',descrizioni,
                             lambda x: -x if x < 0 else x)
@@ -164,8 +165,46 @@ def main(debug,debug_section):
     values = setup_table(values,'TBL_SP_ATTIVITA','TBL_SP_PASSIVITA','STATO_PATRIMONIALE')
     values = setup_table(values,'TBL_CE_COSTI','TBL_CE_RICAVI','CONTO_ECONOMICO')
     write_out(PATH,'finanze-ppit', **values)
+    values = setup_movimenti(values,conti)
+    write_out(PATH,'movimenti-ppit', **values)
 
-
+def setup_movimenti(values,conti):
+    srow = []
+    colnames = []
+    colpub = {}
+    for num,row in enumerate(conti):
+        print("A",row)
+        if re.match(r'^DEFN',row[0]):
+            colnames.extend(row)
+            continue
+        if re.match(r'^DEFK',row[0]):
+            for col,cell in enumerate(row):
+                colnames[col] = row[col]+"."+colnames[col]
+            continue
+        if re.match(r'^DEFP',row[0]):
+            for col,cell in enumerate(row):
+                print(col,cell,colnames[col])
+                if not re.match('^[0-9]',cell):
+                    colnames[col] = None
+                else:
+                    colpub[int(float(cell))-1] = col
+            continue
+        srow.append(row)
+    table = []
+    tabrow = [ [] for x in colpub]
+    for col,k in colpub.items():
+        tabrow[col]=values['DESCRIZIONI'][colnames[k]]
+    table.append(tabrow)
+    tabrow = [ "---" for x in colpub]
+    table.append(tabrow)
+    for row in srow:
+        tabrow = [ [] for x in colpub]
+        for col,k in colpub.items():
+            tabrow[col]=tweak_val(float(row[k])) if table[0][col]=='€' else row[k]
+        table.append(tabrow)
+    rows = "\n".join([ '|' + '|'.join(row) for row in table])
+    values['MOVIMENTI_CONTABILI']=rows
+    return values
 
 def setup_table(values,tb1,tb2,lab):
     tbl1 = values[tb1]
@@ -251,7 +290,7 @@ def setup_db(conti,values):
             sectors = row
             headers = [ s + "_" + h for h,s in zip(headers,sectors)]
             continue
-        elif row[0]=='DEF':
+        elif row[0]=='DEFP':
             continue
         dictionary = dict(zip(headers,row))
         label = dictionary['_CONTO'] + "_" + dictionary['_SOTTOC']
