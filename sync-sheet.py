@@ -210,6 +210,7 @@ def setup_json(values,conti):
     perc_b = (d_val + i_val) / ob_bil
     import json
     dict = {
+        'date': values['FDATA'],
         'i_n': i_num,
         'i_val': i_val,
         'i_last': i_last,
