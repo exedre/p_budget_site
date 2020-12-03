@@ -177,7 +177,7 @@ def main(debug,debug_section):
     values = setup_movimenti(values,conti)
     write_out(PATH,'movimenti-ppit', **values)
     values = setup_json(values,conti)
-    write_out(PATH,'pp-it', **values)
+    write_json(PATH,'pp-it', **values)
 
 
 def setup_json(values,conti):
