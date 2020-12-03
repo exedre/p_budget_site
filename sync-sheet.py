@@ -33,9 +33,12 @@ def write_out(path, fname, **kw):
     out_f.write_text(output)
     print("scrittura "+str(out_f)+" from template "+str(templ_f))
 
-def write_json(path, fname, **kw):
+def write_json(path, fname, fdatap, **kw):
     templ_f = Path(path) / (fname+'.template')
-    out_f = Path(path) / ( fname + '.json')
+    if fdatap:
+        out_f = Path(path) / ( fname + '-' + kw['JDATA'] + '.json')
+    else:
+        out_f = Path(path) / ( fname + '.json')
     templ = templ_f.read_text(encoding='utf-8')
     output = templ.format(**kw)
     out_f.write_text(output)
@@ -177,7 +180,8 @@ def main(debug,debug_section):
     values = setup_movimenti(values,conti)
     write_out(PATH,'movimenti-ppit', **values)
     values = setup_json(values,conti)
-    write_json(PATH,'pp-it', **values)
+    write_json(PATH,'pp-it', False, **values)
+    write_json(PATH,'pp-it', True, **values)
 
 
 def setup_json(values,conti):
