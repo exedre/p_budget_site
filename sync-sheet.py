@@ -140,7 +140,7 @@ for n,v in maxis:
 
 petitions = dict([ (x[0],x) for x in data['petitions']])
 multi_single = {}
-MS = "|ID|Pet|Nome|Cognome|email|||\n|-|-|-|-|-|-|-|\n"
+MS = "|ID|Pet|Nome|Cognome|||\n|-|-|-|-|-|-|\n"
 for x,y in multiple.items():
     petname = petitions[x][12]
     prow = []
@@ -148,20 +148,20 @@ for x,y in multiple.items():
     for lid in y:
         L=leads[lid]
         plead[lid]=L
-        prow.append("|{}|{}|{}|{}|{}|{}|{}|".format(x,petname,L[0],L[1],L[2],L[3],L[4]))
+        prow.append("|{}|{}|{}|{}|{}|{}|".format(x,petname,L[0],L[1],L[2],L[4]))
     multi_single[x]=plead
     MS+="\n".join(prow)
 results['MULTI_SINGLE']=MS
 
 multi_multi = {}
-MM="| "*(7+len(petitions))+"|\n"+"|-"*(7+len(petitions))+"|\n"
+MM="| "*(5+len(petitions))+"|\n"+"|-"*(5+len(petitions))+"|\n"
 for x,y in amaxis.items():
     multi_multi[x] = []
     prow=[]
     for lid,pids in y.items():
         multi_multi[x].append((lid,(leads[lid],pids)))
         L = leads[lid]
-        prow.append("|{}|{}|{}|{}|{}|{}|{}|".format(x,lid,L[0],L[1],L[2],L[3],L[4])+'|'.join([ petitions[x][12] for x in pids])+"|")
+        prow.append("|{}|{}|{}|{}|{}|".format(x,lid,L[1],L[3],L[4])+'|'.join([ petitions[x][12] for x in pids])+"|")
     MM+="\n".join(prow)
 results['MULTI_MULTI']=MM
 
