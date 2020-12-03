@@ -23,9 +23,6 @@ TIMEZONE = 'Europe/Rome'
 
 DEFAULT_LANG = u'it'
 
-YEAR = u'2020'
-EDITION = 'autumn'
-
 USE_FOLDER_AS_CATEGORY = True
 
 # Feed generation is usually not desired when developing
@@ -54,8 +51,7 @@ THEME = 'themes/pirates'
 DATE_FORMATS = {
     'en': '%a, %d %b %Y',
     'jp': '%Y-%m-%d(%a)',
-    'it': '%d-%m-%Y',
+    'it': '%d/%m/%Y',
 }
 
-LOCALE = ('it_IT',
-          )
+LOCALE = ('it_IT', )
