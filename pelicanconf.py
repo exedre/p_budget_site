@@ -47,7 +47,6 @@ STATIC_PATHS = ['images', 'pdfs', 'audio', '.htaccess']
 
 THEME = 'themes/pirates'
 
-
 DATE_FORMATS = {
     'en': '%a, %d %b %Y',
     'jp': '%Y-%m-%d(%a)',

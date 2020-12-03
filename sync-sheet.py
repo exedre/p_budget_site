@@ -126,6 +126,7 @@ def main(debug,debug_section):
     theday = datetime.date(*map(int, s.split('_')))
     prevday = theday - datetime.timedelta(days=1)
     values['JDATAY']=prevday.strftime('%Y%m%d')
+    values['DATA']=prevday.strftime('%Y-%m-%d')
     if debug and debug_section=='db':
         pprint(values)
         return
