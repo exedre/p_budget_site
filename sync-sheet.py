@@ -36,7 +36,9 @@ def write_out(path, fname, **kw):
 def write_json(path, fname, fdatap, **kw):
     templ_f = Path(path) / (fname+'.template')
     if fdatap:
-        out_f = Path(path) / ( fname + '-' + kw['JDATA'] + '.json')
+        if not (Path(path) / 'json').exists():
+            (Path(path) / 'json').mkdir()
+        out_f = Path(path) / 'json' / ( fname + '-' + kw['JDATA'] + '.json')
     else:
         out_f = Path(path) / ( fname + '.json')
     templ = templ_f.read_text(encoding='utf-8')
