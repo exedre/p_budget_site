@@ -161,7 +161,7 @@ for x,y in amaxis.items():
     for lid,pids in y.items():
         multi_multi[x].append((lid,(leads[lid],pids)))
         L = leads[lid]
-        prow.append("|{}|{}|{}|{}|{}|".format(x,lid,L[1],L[3],L[4])+'|'.join([ petitions[x][12] for x in pids])+"|")
+        prow.append("|{}|{}|{}|{}|{}|".format(x,lid,L[1],L[2],L[4])+'|'.join([ petitions[x][12] for x in pids])+"|")
     MM+="\n".join(prow)
 results['MULTI_MULTI']=MM
 
