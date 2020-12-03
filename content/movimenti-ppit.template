@@ -1,6 +1,6 @@
 Template: article
 Title: Movimenti di bilancio al {DATA}
-Date: {DATA}
+Date: {FDATA}
 Category: FINANZA
 lang: it
 slug: movimenti-ppit-{JDATA}
