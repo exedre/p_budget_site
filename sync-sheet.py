@@ -196,7 +196,7 @@ def setup_json(values,conti):
         if re.match(r'^DEFP',row[0]):
             continue
         srow.append(row)
-    donazioni = list(filter(lambda x: x[3]=='DONA',srow))
+    donazioni = list(filter(lambda x: x[3]=='DONA',srow))[1:]
     iscrizioni = list(filter(lambda x: x[3]=='ISCR',srow))
     ob_iscr = float(values['OB_ISCR'])
     ob_bil  = float(values['OB_BIL'])
@@ -213,9 +213,11 @@ def setup_json(values,conti):
         'i_n': i_num,
         'i_val': i_val,
         'i_last': i_last,
+        'i_avg': i_val / i_num,
         'd_n': d_num,
         'd_val': d_val,
         'd_last': d_last,
+        'd_avg': d_val / d_num,
         'perc_i': perc_i,
         'perc_b': perc_b
     }
