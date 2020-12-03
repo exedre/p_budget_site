@@ -94,7 +94,7 @@ ssh_upload: publish
 go: do rsync_upload
 
 do:
-	conda activate pws; cd /home/exedre/PP-IT/it.partito-pirata.bilancio-site/ && python sync-sheet.py
+	conda activate pws; cd /home/exedre/PP-IT/it.partito-pirata.reports-site/ && python sync-sheet.py
 
 upload: publish
 	rsync -P -rvzc --delete $(OUTPUTDIR)/ $(SSH_TARGET_DIR) --cvs-exclude  --exclude=materiali --delete-excluded

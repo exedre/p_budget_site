@@ -1,29 +1,14 @@
-# coding: utf-8
-
-"""
-Shows basic usage of the Sheets API. Prints values from a Google Spreadsheet.
-"""
-import re
-from apiclient.discovery import build
-from httplib2 import Http
-from oauth2client import file, client, tools
-from pprint import pprint
+from datetime import datetime,timedelta
+import mysql.connector as mysql
+import json
 from pathlib import Path
 import click
-
+import re
 import logging
 LOGGER = logging.getLogger("PWS")
 logging.basicConfig(level=logging.INFO)
 
-### ---------------------------------------- CONFIGURATION
-
-SPREADSHEET_ID = '1-y_YAyjJ9wqsF1Z1aEbe_H1-naqjEwSH60K-t8HUWXs'
-
-CONTI = 'CONTI'
-
 PATH = 'content/'
-
-## ---------------------------------------- FINE CONFIGURAZIONE
 
 def write_out(path, fname, **kw):
     templ_f = Path(path) / (fname+'.template')
@@ -46,337 +31,160 @@ def write_json(path, fname, fdatap, **kw):
     out_f.write_text(output)
     print("scrittura "+str(out_f)+" from template "+str(templ_f))
 
-#### ---------------------------------------- READ FUNCTIONS
 
-def read_value(service, id, range, tweak_item=None):
-    result = service.spreadsheets().values().get(spreadsheetId=id,
-                                                 range=range).execute()
-    values = result.get('values', [])
-    if tweak_item:
-        values = tweak_item(values)
-    if len(values)==1:
-        val = values[0]
-        if len(val)==1:
-            v = val[0]
-            if v[0]=='€':
-                return float(re.sub(',','',v[1:]))
-            try:
-                v = float(v)
-            except ValueError:
-                pass
-            return v
-        return val
-    else:
-        return values
+db = mysql.connect(
+    host = "localhost",
+    user = "it_reri",
+    passwd = "Damien8cool",
+    database = "it_reri_mailman_mautic",
 
-def read_db(service, id, range, tweak_item=None, tweak_collection=None):
-    result = service.spreadsheets().values().get(spreadsheetId=id,
-                                                 range=range).execute()
-    values = result.get('values', [])
-    infos = {}
-    if not values:
-        print('No data found.')
-    else:
-        return values
+)
 
-def read_db_into_dict(service, id, range, tweak_item=None, tweak_collection=None):
-    result = service.spreadsheets().values().get(spreadsheetId=id,
-                                                 range=range).execute()
-    values = result.get('values', [])
-    infos = {}
-    if not values:
-        print('No data found.')
-    else:
-        for jj,row in enumerate(values):
-            if jj == 0:
-                HEADERS = row
-                continue
-            if len(row[0]):
-                info = dict(zip(HEADERS, row))
-                info['label'] = info['LNK'].lower()
-                if tweak_item:
-                    info = tweak_item(info)
-                infos[info['label'].lower()] = info
-    if tweak_collection:
-        infos = tweak_collection(infos)
-    return infos
-
-#### ---------------------------------------- END READ FUNCTIONS
-
-
-#### ---------------------------------------- SETUP SYNC SHEET
-
-def setup_sheet_work(SPREADSHEET_ID):
-    SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly'
-    store = file.Storage('credentials.json')
-    creds = store.get()
-    if not creds or creds.invalid:
-        flow = client.flow_from_clientsecrets('client_secret.json', SCOPES)
-        creds = tools.run_flow(flow, store)
-    service = build('sheets', 'v4', http=creds.authorize(Http()))
-    return service
-
-
-@click.command()
-@click.option('--debug/--no-debug', default=False)
-@click.option('--debug-section', type=click.Choice(['db', 'program']))
-def main(debug,debug_section):
-    LOGGER.info('service beginning')
-    service = setup_sheet_work(SPREADSHEET_ID)
-    LOGGER.info('service loaded')
-    conti = read_db(service, SPREADSHEET_ID, CONTI)
-    pprint(conti)
-    values = {}
-    values = setup_db(conti,values)
-    fields = 'OB_ISCR,OB_BIL,DATA,A_DONORBOX,C_FEE,CARTA_TINABA,CHECK,CONTI,CONTO_TINABA,DISPONIBILE,FEE_DONORBOX,FEE_PAYPAL,FEE_STRIPE,FEE_TOTALI,GRANTOTALE,RESIDUAL_DONORBOX,TOT_DONORBOX,A_PAYPAL,A_STRIPE,A_TINABA,TOTALE,TOTALI,CE_COSTI,CE_RICAVI,SP_ATTIVITA,SP_PASSIVITA,DESC_CONTI,DESC_SOTTOCONTI,DESCRIZIONE_BILANCIO'.split(',')
-    for field in fields:
-        value = read_value(service, SPREADSHEET_ID, field)
-        values[field] = value
-        print(field,"=",value)
-    values['JDATA']=re.sub(r'(\d+)/(\d+)/(\d\d\d\d) (\d+):(\d+):(\d+)',r'\3\2\1',values['DATA'])
-    values['FDATA']=re.sub(r'(\d+)/(\d+)/(\d\d\d\d) (\d+):(\d+):(\d+)',r'\3-\2-\1',values['DATA'])
-    import datetime
-    s = re.sub(r'(\d+)/(\d+)/(\d\d\d\d) (\d+):(\d+):(\d+)',r'\3_\2_\1',values['DATA'])
-    theday = datetime.date(*map(int, s.split('_')))
-    prevday = theday - datetime.timedelta(days=1)
-    values['JDATAY']=prevday.strftime('%Y%m%d')
-    if debug and debug_section=='db':
-        pprint(values)
-        return
-    for n,label in enumerate('ISCRIZIONI,DONAZIONI,ALTRO,PAGAMENTI'.split(',')):
-        values[label]=values['TOTALI'][n]
-    descrizioni = dict([ (k,v) for k,v in values['DESCRIZIONE_BILANCIO']])
-    values['DESCRIZIONI']=descrizioni
-    values['BILANCIO'] = {}
-    values = setup_bilancio(values,'CE_COSTI',descrizioni,
-                            lambda x: -x if x < 0 else x)
-    values = setup_bilancio(values,'CE_RICAVI',descrizioni)
-    values = setup_bilancio(values,'SP_ATTIVITA',descrizioni)
-    values = setup_bilancio(values,'SP_PASSIVITA',descrizioni)
-    utile_o_perdita = values['R_T'] - values['C_T']
-    if utile_o_perdita > 0:
-        # Utile
-        values['TBL_CE_RICAVI'].append(["----",'----'])
-        values['TBL_CE_COSTI'].append(["Utile d'esercizio",utile_o_perdita])
-        values['TBL_CE_COSTI'].append(["Totale a pareggio",values['C_T']+utile_o_perdita])
-        values['TBL_CE_RICAVI'].append(["Totale a pareggio",values['R_T']])
-        values['TBL_SP_ATTIVITA'].append(["----",'----'])
-        values['TBL_SP_PASSIVITA'].append(["Utile d'esercizio",utile_o_perdita])
-        values['TBL_SP_ATTIVITA'].append(["Totale a pareggio",values['A_T']])
-        values['TBL_SP_PASSIVITA'].append(["Totale a pareggio",values['P_T']+utile_o_perdita])
-    else:
-        # Perdita
-        values['TBL_CE_RICAVI'].append(["Perdita d'esercizio",-utile_o_perdita])
-        values['TBL_CE_COSTI'].append(["----",'----'])
-        values['TBL_CE_COSTI'].append(["Totale a pareggio",values['C_T']])
-        values['TBL_CE_RICAVI'].append(["Totale a pareggio",values['R_T']+utile_o_perdita])
-        values['TBL_SP_ATTIVITA'].append(["Perdita d'esercizio",-utile_o_perdita])
-        values['TBL_SP_PASSIVITA'].append(["----",'----'])
-        values['TBL_SP_PASSIVITA'].append(["Totale a pareggio",values['P_T']])
-        values['TBL_SP_ATTIVITA'].append(["Totale a pareggio",values['A_T']+utile_o_perdita])
-    # values = setup_iscrizioni(values,db)
-    pprint(values)
-    values = setup_table(values,'TBL_SP_ATTIVITA','TBL_SP_PASSIVITA','STATO_PATRIMONIALE')
-    values = setup_table(values,'TBL_CE_COSTI','TBL_CE_RICAVI','CONTO_ECONOMICO')
-
-    write_out(PATH,'finanze-ppit', **values)
-    values = setup_movimenti(values,conti)
-    write_out(PATH,'movimenti-ppit', **values)
-    values = setup_json(values,conti)
-    write_json(PATH,'pp-it', False, **values)
-    write_json(PATH,'pp-it', True, **values)
-
-
-def setup_json(values,conti):
-    srow = []
-    colnames = []
-    colpub = {}
-    for num,row in enumerate(conti):
-        print("A",row)
-        if re.match(r'^DEFN',row[0]):
-            colnames.extend(row)
-            continue
-        if re.match(r'^DEFK',row[0]):
-            for col,cell in enumerate(row):
-                colnames[col] = row[col]+"."+colnames[col]
-            continue
-        if re.match(r'^DEFP',row[0]):
-            continue
-        srow.append(row)
-    donazioni = list(filter(lambda x: x[3]=='DONA',srow))[1:]
-    iscrizioni = list(filter(lambda x: x[3]=='ISCR',srow))
-    ob_iscr = float(values['OB_ISCR'])
-    ob_bil  = float(values['OB_BIL'])
-    d_num = len(donazioni)
-    d_val = sum(map(lambda x: float(x[4]),donazioni))
-    d_last = donazioni[-1][6]
-    i_num = len(iscrizioni)
-    i_val = sum(map(lambda x: float(x[4]),iscrizioni))
-    i_last = iscrizioni[-1][6]
-    perc_i = i_num / ob_iscr
-    perc_b = (d_val + i_val) / ob_bil
-    import json
-    dict = {
-        'date': values['FDATA'],
-        'i_n': i_num,
-        'i_val': i_val,
-        'i_last': i_last,
-        'i_avg': i_val / i_num,
-        'd_n': d_num,
-        'd_val': d_val,
-        'd_last': d_last,
-        'd_avg': d_val / d_num,
-        'perc_i': perc_i,
-        'perc_b': perc_b
+# numero di form relativi alle petizioni
+params = {
+    'petition_cat': 8,
+    'ended_petition_cat': 9,
+    'onboarding_min_form': 4,
+    'onboarding_med_form': 1,
+    'onboarding_max_form': 9,
+    'deleted_form': 6,
     }
-    values['JSON'] = json.dumps(dict)
-    return values
-    # Cosa pubblicare nel json
-    # - numero totale di iscrizioni
-    # - valore medio dell'iscrizione
-    # - data ultima iscrizione
-    # - progressione iscrizioni
-    # - d_num numero totale di donazioni
-    # - d_val valore medio della donazione
-    # - d_last data ultima donazione
-    # - d_prog progressione donazioni
-    # - percentuale di raggiungimento dell'obiettivo di iscrizioni
-    # - percentuale di raggiungimento dell'obiettivo economico
 
+queries = {
+    'all' :   'SELECT COUNT(*) from ma_leads',
+    'leads': 'SELECT COUNT(*) from ma_leads where email is not NULL',
+    'named': 'SELECT COUNT(*) from ma_leads where email is not NULL and firstname is not NULL',
+    'onboard_min': 'SELECT COUNT(S.lead_id) from ma_form_submissions S WHERE S.form_id = {onboarding_min_form}',
+    'onboard_med': 'SELECT COUNT(S.lead_id) from ma_form_submissions S WHERE S.form_id = {onboarding_med_form}',
+    'onboard_max': 'SELECT COUNT(S.lead_id) from ma_form_submissions S WHERE S.form_id = {onboarding_max_form}',
+    'deleted': 'SELECT COUNT(S.id) from ma_form_submissions S WHERE S.form_id = {deleted_form}',
+    'all_petitions': 'SELECT COUNT(*) from ma_forms where category_id in ({petition_cat},{ended_petition_cat})',
+    'petitions': 'SELECT COUNT(*) from ma_forms where category_id = {petition_cat}',
+    # firmatari di tutte le petizioni
+    'petsign' : 'SELECT COUNT(S.lead_id) from ma_form_submissions S JOIN ma_forms F on S.form_id = F.id where F.category_id = {petition_cat}',
+    # firmatari unici
+    'dpetsign' : 'SELECT COUNT(DISTINCT(S.lead_id)) from ma_form_submissions S JOIN ma_forms F on S.form_id = F.id where F.category_id = {petition_cat}',
+}
 
-def setup_movimenti(values,conti):
-    srow = []
-    colnames = []
-    colpub = {}
-    for num,row in enumerate(conti):
-        print("A",row)
-        if re.match(r'^DEFN',row[0]):
-            colnames.extend(row)
-            continue
-        if re.match(r'^DEFK',row[0]):
-            for col,cell in enumerate(row):
-                colnames[col] = row[col]+"."+colnames[col]
-            continue
-        if re.match(r'^DEFP',row[0]):
-            for col,cell in enumerate(row):
-                print(col,cell,colnames[col])
-                if not re.match('^[0-9]',cell):
-                    colnames[col] = None
-                else:
-                    colpub[int(float(cell))-1] = col
-            continue
-        srow.append(row)
-    table = []
-    tabrow = [ [] for x in colpub]
-    for col,k in colpub.items():
-        tabrow[col]=values['DESCRIZIONI'][colnames[k]]
-    table.append(tabrow)
-    tabrow = [ "---" for x in colpub]
-    table.append(tabrow)
-    for row in srow:
-        tabrow = [ [] for x in colpub]
-        for col,k in colpub.items():
-            tabrow[col]=tweak_val(float(row[k])) if table[0][col]=='€' else row[k]
-        table.append(tabrow)
-    rows = "\n".join([ '|' + '|'.join(row) for row in table])
-    values['MOVIMENTI_CONTABILI']=rows
-    return values
-
-def setup_table(values,tb1,tb2,lab):
-    tbl1 = values[tb1]
-    tbl2 = values[tb2]
-    tbls = [tbl1,tbl2]
-    o12 = 0 if len(tbl1)>=len(tbl2) else 1
-    o21 = 1 - o12
-    #l3 = tbl1.pop() + tbl2.pop()
-    #l2 = tbl1.pop() + tbl2.pop()
-    #l1 = tbl1.pop() + tbl2.pop()
-    M = max(len(tbl1),len(tbl2))
-    k = M-min(len(tbl1),len(tbl2))
-    table = []
-    for j in range(0,M,+1):
-        print(M-1,k,j)
-        if len(tbl1)>0:
-            t1 = tbl1.pop()
+def make_queries(db,results,params,prefix,**queries):
+    inresults=results
+    for name,query in queries.items():
+        cursor = db.cursor()
+        executing = query.format(**params)
+        print(name, executing)
+        cursor.execute(executing)
+        records = cursor.fetchall()
+        if prefix:
+            inresults[prefix+"_"+name]=records
         else:
-            t1 = ['','']
-        if len(tbl2)>0:
-            t1 += tbl2.pop()
+            inresults[name]=records
+    return inresults
+
+results = {}
+results = make_queries(db,results,params,None,**queries)
+
+queries = {
+    'leads': 'SELECT id,firstname,lastname,email,city,last_active from ma_leads where email is not NULL',
+    'petitions': 'SELECT * from ma_forms where category_id = {petition_cat}',
+}
+
+data = {}
+data = make_queries(db,data,params,None,**queries)
+
+leads = dict([ (x[0],x) for x in data['leads'] ])
+# PETITIONS
+
+common = {}
+multiple = {}
+preport = ["|||||\n|-|-|-|-|"]
+for petition in data['petitions']:
+    pid = petition[0]
+    name =petition[12]
+    alias =petition[13]
+    print(pid,name)
+    params['petition_id']=pid
+    queries = {
+        'dsigners': 'SELECT COUNT(DISTINCT(lead_id)) from ma_form_submissions where form_id = {petition_id}',
+        'fromfb': 'SELECT COUNT(DISTINCT(lead_id)) from ma_form_submissions where form_id = {petition_id} AND referer LIKE "%fbclid%"',
+    }
+    results = make_queries(db,results,params,prefix="P_{}".format(pid),**queries)
+    pprep = []
+    for lab in queries.keys():
+        pprep.append("|{}|{}|{}|{}|".format(pid,name,lab,results["P_{}_{}".format(pid,lab)]))
+    preport.append('\n'.join(pprep))
+    dqueries = {
+        'subscribers': 'SELECT * from ma_form_submissions WHERE form_id = {petition_id}',
+    }
+    data[pid] = {}
+    data[pid] = make_queries(db,data[pid],params,None,**dqueries)
+    for subscriber in map(lambda x: x[3],data[pid]['subscribers']):
+        if not subscriber:
+            continue
+        if subscriber not in common:
+            common[subscriber] = []
+        if pid not in common[subscriber]:
+            common[subscriber].append(pid)
         else:
-            t1 += ["",""]
-        print(t1)
-        table.append("|"+"|".join([ tweak_val(x) for x in t1]))
-    table.append("|-|-|-|-")
-    values[lab]=("|\n".join(reversed(table)))
-    return values
+            if pid not in multiple:
+                multiple[pid] = []
+            if subscriber not in multiple[pid]:
+                multiple[pid].append(subscriber)
+results['PETREP']='\n'.join(preport)
+morethan1 = dict(filter(lambda x: x[0] and len(x[1])>1,common.items()))
+maxis = list(map(lambda x: (len(x[1]),x) ,morethan1.items()))
+amaxis = {}
+for n,v in maxis:
+    if n not in amaxis:
+        amaxis[n] = {}
+    amaxis[n][v[0]]=v[1]
 
-def tweak_val(val):
-    if isinstance(val,str):
-        if re.match(r'^-',val):
-            return ""
-    if isinstance(val,float):
-        return "€ {:2,.2f}".format(val)
-    return val
+petitions = dict([ (x[0],x) for x in data['petitions']])
+multi_single = {}
+MS = "|ID|Pet|Nome|Cognome|email|||\n|-|-|-|-|-|-|-|\n"
+for x,y in multiple.items():
+    petname = petitions[x][12]
+    prow = []
+    plead = {}
+    for lid in y:
+        L=leads[lid]
+        plead[lid]=L
+        prow.append("|{}|{}|{}|{}|{}|{}|{}|".format(x,petname,L[0],L[1],L[2],L[3],L[4]))
+    multi_single[x]=plead
+    MS+="\n".join(prow)
+results['MULTI_SINGLE']=MS
 
-def setup_bilancio(values,sezione,descrizioni,tweak=lambda x: x):
-    costi = values[sezione]
-    bilancio = {}
-    valoriz = []
-    for jj,row in enumerate(costi):
-        print(jj,row)
-        if len(row)==0:
-            continue
-        label = row[0]
-        if len(row)==2:
-            if re.match(r' *>',row[1]):
-                print("FORMULA=",row[1])
-                formula = re.split('\+',re.sub("[\> ]+","",row[1]))
-                valore = 0.0
-                for component in formula:
-                    if component in values:
-                        print(component,"=",values[component])
-                        valore += float(values[component])
-                valore=tweak(valore)
-                values[label]=valore
-                descrizione = descrizioni[label] if label in descrizioni else label
-                valoriz.append( [descrizione,valore] )
-            # here calc
-            continue
-        label = row[0]
-        if len(label)==0:
-            continue
-        if label[0]=='-':
-            valoriz.append(['----','-----'])
-            continue
-        if label in values:
-            valore=tweak(values[label])
-            values[label]=valore
-            descrizione = descrizioni[label] if label in descrizioni else label
-            valoriz.append( [descrizione,valore] )
-    values['TBL_'+sezione]=valoriz
-    return values
-
-def setup_db(conti,values):
-    db = {}
-    for jj,row in enumerate(conti):
-        if row[0]=='DEFN':
-            headers = row
-            continue
-        elif row[0]=='DEFK':
-            sectors = row
-            headers = [ s + "_" + h for h,s in zip(headers,sectors)]
-            continue
-        elif row[0]=='DEFP':
-            continue
-        dictionary = dict(zip(headers,row))
-        label = dictionary['_CONTO'] + "_" + dictionary['_SOTTOC']
-        amount = float(dictionary['_AMMONTARE'])
-        print(jj,label,"=",amount)
-        if label not in db:
-            db[label]=0.0
-        db[label]+=amount
-    return db
+multi_multi = {}
+MM="| "*(7+len(petitions))+"|\n"+"|-"*(7+len(petitions))+"|\n"
+for x,y in amaxis.items():
+    multi_multi[x] = []
+    prow=[]
+    for lid,pids in y.items():
+        multi_multi[x].append((lid,(leads[lid],pids)))
+        L = leads[lid]
+        prow.append("|{}|{}|{}|{}|{}|{}|{}|".format(x,lid,L[0],L[1],L[2],L[3],L[4])+'|'.join([ petitions[x][12] for x in pids])+"|")
+    MM+="\n".join(prow)
+results['MULTI_MULTI']=MM
 
 
-if __name__ == '__main__':
-    main()
+# MVP
+
+#
+# firmatari ad almeno due petizioni
+# firmatari a tutte le petizioni
+
+
+today = datetime.now()
+
+# dd/mm/YY
+
+
+results['JDATA'] = today.strftime("%Y%m%d")
+results['FDATA'] = today.strftime("%Y-%m-%d")
+results['DATA'] = today.strftime("%Y-%m-%d %H:%S")
+
+theday = today
+prevday = theday - timedelta(days=1)
+results['JDATAY'] = prevday.strftime('%Y%m%d')
+
+
+write_out(PATH,'report', **results)
