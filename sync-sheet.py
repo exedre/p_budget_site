@@ -33,6 +33,14 @@ def write_out(path, fname, **kw):
     out_f.write_text(output)
     print("scrittura "+str(out_f)+" from template "+str(templ_f))
 
+def write_json(path, fname, **kw):
+    templ_f = Path(path) / (fname+'.template')
+    out_f = Path(path) / ( fname + '.json')
+    templ = templ_f.read_text(encoding='utf-8')
+    output = templ.format(**kw)
+    out_f.write_text(output)
+    print("scrittura "+str(out_f)+" from template "+str(templ_f))
+
 #### ---------------------------------------- READ FUNCTIONS
 
 def read_value(service, id, range, tweak_item=None):
@@ -115,7 +123,7 @@ def main(debug,debug_section):
     pprint(conti)
     values = {}
     values = setup_db(conti,values)
-    fields = 'DATA,A_DONORBOX,C_FEE,CARTA_TINABA,CHECK,CONTI,CONTO_TINABA,DISPONIBILE,FEE_DONORBOX,FEE_PAYPAL,FEE_STRIPE,FEE_TOTALI,GRANTOTALE,RESIDUAL_DONORBOX,TOT_DONORBOX,A_PAYPAL,A_STRIPE,A_TINABA,TOTALE,TOTALI,CE_COSTI,CE_RICAVI,SP_ATTIVITA,SP_PASSIVITA,DESC_CONTI,DESC_SOTTOCONTI,DESCRIZIONE_BILANCIO'.split(',')
+    fields = 'OB_ISCR,OB_BIL,DATA,A_DONORBOX,C_FEE,CARTA_TINABA,CHECK,CONTI,CONTO_TINABA,DISPONIBILE,FEE_DONORBOX,FEE_PAYPAL,FEE_STRIPE,FEE_TOTALI,GRANTOTALE,RESIDUAL_DONORBOX,TOT_DONORBOX,A_PAYPAL,A_STRIPE,A_TINABA,TOTALE,TOTALI,CE_COSTI,CE_RICAVI,SP_ATTIVITA,SP_PASSIVITA,DESC_CONTI,DESC_SOTTOCONTI,DESCRIZIONE_BILANCIO'.split(',')
     for field in fields:
         value = read_value(service, SPREADSHEET_ID, field)
         values[field] = value
@@ -168,6 +176,63 @@ def main(debug,debug_section):
     write_out(PATH,'finanze-ppit', **values)
     values = setup_movimenti(values,conti)
     write_out(PATH,'movimenti-ppit', **values)
+    values = setup_json(values,conti)
+    write_out(PATH,'pp-it', **values)
+
+
+def setup_json(values,conti):
+    srow = []
+    colnames = []
+    colpub = {}
+    for num,row in enumerate(conti):
+        print("A",row)
+        if re.match(r'^DEFN',row[0]):
+            colnames.extend(row)
+            continue
+        if re.match(r'^DEFK',row[0]):
+            for col,cell in enumerate(row):
+                colnames[col] = row[col]+"."+colnames[col]
+            continue
+        if re.match(r'^DEFP',row[0]):
+            continue
+        srow.append(row)
+    donazioni = list(filter(lambda x: x[3]=='DONA',srow))
+    iscrizioni = list(filter(lambda x: x[3]=='ISCR',srow))
+    ob_iscr = float(values['OB_ISCR'])
+    ob_bil  = float(values['OB_BIL'])
+    d_num = len(donazioni)
+    d_val = sum(map(lambda x: float(x[4]),donazioni))
+    d_last = donazioni[-1][6]
+    i_num = len(iscrizioni)
+    i_val = sum(map(lambda x: float(x[4]),iscrizioni))
+    i_last = iscrizioni[-1][6]
+    perc_i = i_num / ob_iscr
+    perc_b = (d_val + i_val) / ob_bil
+    import json
+    dict = {
+        'i_n': i_num,
+        'i_val': i_val,
+        'i_last': i_last,
+        'd_n': d_num,
+        'd_val': d_val,
+        'd_last': d_last,
+        'perc_i': perc_i,
+        'perc_b': perc_b
+    }
+    values['JSON'] = json.dumps(dict)
+    return values
+    # Cosa pubblicare nel json
+    # - numero totale di iscrizioni
+    # - valore medio dell'iscrizione
+    # - data ultima iscrizione
+    # - progressione iscrizioni
+    # - d_num numero totale di donazioni
+    # - d_val valore medio della donazione
+    # - d_last data ultima donazione
+    # - d_prog progressione donazioni
+    # - percentuale di raggiungimento dell'obiettivo di iscrizioni
+    # - percentuale di raggiungimento dell'obiettivo economico
+
 
 def setup_movimenti(values,conti):
     srow = []
