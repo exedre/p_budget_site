@@ -178,7 +178,6 @@ def main(debug,debug_section):
     pprint(values)
     values = setup_table(values,'TBL_SP_ATTIVITA','TBL_SP_PASSIVITA','STATO_PATRIMONIALE')
     values = setup_table(values,'TBL_CE_COSTI','TBL_CE_RICAVI','CONTO_ECONOMICO')
-
     write_out(PATH,'finanze-ppit', **values)
     values = setup_movimenti(values,conti)
     write_out(PATH,'movimenti-ppit', **values)

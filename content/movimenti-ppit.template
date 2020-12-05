@@ -1,0 +1,17 @@
+Template: article
+Title: Movimenti di bilancio al {DATA}
+Date: {FDATA}
+Category: FINANZA
+lang: it
+slug: movimenti-ppit-{JDATA}
+
+# Movimenti di bilancio al {DATA}
+
+Questa è una bozza non verificata dei movimenti inerenti il bilancio attuale del Partito Pirata, estratta in automatico ogni notte dalla contabilità. Per questo motivo è possibile che i conti non siano completamente quadrati in relazione a scritture non correttamente registrate. Questa pagina è pubblicata a titolo di mera informazione. È offerta così com'è, senza nessuna garanzia implicita o esplicita. Fanno fede solo i bilanci ufficiali periodici revisionati dal tesoriere e presentati all'assemblea. La descrizione delle operazioni è rappresentata con una firma MD5 per tutelare la privacy delle controparti.
+
+# Movimenti Contabili
+
+{MOVIMENTI_CONTABILI}
+
+<br/><a href="/finanze-ppit-{JDATA}.html">^</a>
+<br/><a href="/movimenti-ppit-{JDATAY}.html">&lt;</a>

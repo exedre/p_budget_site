@@ -14,8 +14,8 @@ def split(string):
 
 JINJA_FILTERS = {'split': split}
 
-AUTHOR = u'reporter'
-SITENAME = u'Reporter'
+AUTHOR = u'Emmanuele Somma'
+SITENAME = u'Situazione Finanziaria'
 SITEURL = ''
 PATH = 'content'
 

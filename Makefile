@@ -12,10 +12,10 @@ FTP_HOST=localhost
 FTP_USER=anonymous
 FTP_TARGET_DIR=/
 
-SSH_HOST=www-data
+SSH_HOST=ppit
 SSH_PORT=22
-SSH_USER=www-data
-SSH_TARGET_DIR=/home/sites/it.xed/it.xed.ppreport/home/
+SSH_USER=ppit
+SSH_TARGET_DIR=/home/sites/it.partito-pirata/it.partito-pirata.bilancio/home/
 
 S3_BUCKET=my_s3_bucket
 
