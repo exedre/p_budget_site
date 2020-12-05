@@ -40,7 +40,7 @@ THIS_TITLE = ""
 
 DEFAULT_PAGINATION = 1
 
-STATIC_PATHS = ['json','images', 'pdfs', 'audio', '.htaccess', 'pp-it.json']
+STATIC_PATHS = ['images', 'pdfs', 'audio', '.htaccess', 'pp-it.json']
 
 # Uncomment following line if you want document-relative URLs when developing
 # RELATIVE_URLS = True
