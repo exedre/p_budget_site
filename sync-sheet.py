@@ -336,7 +336,12 @@ def setup_bilancio(values,sezione,descrizioni,tweak=lambda x: x):
                 for component in formula:
                     if component in values:
                         print(component,"=",values[component])
-                        valore += float(values[component])
+                        sign = 1.0
+                        if component[0]=='-':
+                            component = component[1:]
+                            sign = -1.0
+                        val =  float(values[component])
+                        valore += val * sign
                 valore=tweak(valore)
                 values[label]=valore
                 descrizione = descrizioni[label] if label in descrizioni else label
