@@ -299,7 +299,7 @@ def setup_table(values,tb1,tb2,lab):
     k = M-min(len(tbl1),len(tbl2))
     table = []
     for j in range(0,M,+1):
-        print(M-1,k,j)
+        print("TABLE:",M-1,k,j)
         if len(tbl1)>0:
             t1 = tbl1.pop()
         else:
