@@ -152,8 +152,8 @@ def main(debug,debug_section):
                             lambda x: -x if x < 0 else x)
     values = setup_bilancio(values,'CE_RICAVI',descrizioni)
     values = setup_bilancio(values,'SP_ATTIVITA',descrizioni)
-    debiti = values['A_CRED'] - values['R_CRED']
-    values['P_DEB']=debiti
+    # debiti = values['A_CRED'] - values['R_CRED']
+    # values['P_DEB']=debiti
     values = setup_bilancio(values,'SP_PASSIVITA',descrizioni)
     utile_o_perdita = values['R_T'] - values['C_T']
     if utile_o_perdita > 0:
