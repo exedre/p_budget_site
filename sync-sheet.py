@@ -152,9 +152,9 @@ def main(debug,debug_section):
                             lambda x: -x if x < 0 else x)
     values = setup_bilancio(values,'CE_RICAVI',descrizioni)
     values = setup_bilancio(values,'SP_ATTIVITA',descrizioni)
-    values = setup_bilancio(values,'SP_PASSIVITA',descrizioni)
     debiti = values['A_CRED'] - values['R_CRED']
     values['P_DEB']=debiti
+    values = setup_bilancio(values,'SP_PASSIVITA',descrizioni)
     utile_o_perdita = values['R_T'] - values['C_T']
     if utile_o_perdita > 0:
         # Utile
@@ -292,9 +292,6 @@ def setup_table(values,tb1,tb2,lab):
     tbls = [tbl1,tbl2]
     o12 = 0 if len(tbl1)>=len(tbl2) else 1
     o21 = 1 - o12
-    #l3 = tbl1.pop() + tbl2.pop()
-    #l2 = tbl1.pop() + tbl2.pop()
-    #l1 = tbl1.pop() + tbl2.pop()
     M = max(len(tbl1),len(tbl2))
     k = M-min(len(tbl1),len(tbl2))
     table = []
