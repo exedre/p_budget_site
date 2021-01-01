@@ -334,12 +334,12 @@ def setup_bilancio(values,sezione,descrizioni,tweak=lambda x: x):
                 formula = re.split('\+',re.sub("[\> ]+","",row[1]))
                 valore = 0.0
                 for component in formula:
+                    sign = 1.0
+                    if component[0]=='-':
+                        component = component[1:]
+                        sign = -1.0
                     if component in values:
-                        print(component,"=",values[component])
-                        sign = 1.0
-                        if component[0]=='-':
-                            component = component[1:]
-                            sign = -1.0
+                        print(component,"=",sign,"*",values[component] )
                         val =  float(values[component])
                         valore += val * sign
                 valore=tweak(valore)
