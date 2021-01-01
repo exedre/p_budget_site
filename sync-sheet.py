@@ -273,8 +273,11 @@ def setup_movimenti(values,conti):
     tabrow = [ "---" for x in colpub]
     table.append(tabrow)
     for row in srow:
+        print(row)
         tabrow = [ [] for x in colpub]
+        # import pdb; pdb.set_trace()
         for col,k in colpub.items():
+            print(col,k,row[k])
             tabrow[col]=tweak_val(float(row[k])) if table[0][col]=='€' else row[k]
         table.append(tabrow)
     rows = "\n".join([ '|' + '|'.join(row) for row in table])
