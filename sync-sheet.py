@@ -340,7 +340,7 @@ def setup_bilancio(values,sezione,descrizioni,tweak=lambda x: x):
                         sign = -1.0
                     if component in values:
                         print(component,"=",sign,"*",values[component] )
-                        val =  float(values[component])
+                        val =  float(re.sub('€','',str(values[component])))
                         valore += val * sign
                 valore=tweak(valore)
                 values[label]=valore
